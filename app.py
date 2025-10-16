@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, render_template
 import random
+import os
 
 app = Flask(__name__)
 SIZE = 4
@@ -99,4 +100,5 @@ def reset():
     return jsonify(matrix=game_matrix)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))  # Use Render's PORT or default 10000
+    app.run(host='0.0.0.0', port=port)
