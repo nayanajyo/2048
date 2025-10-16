@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>2048 Flask Game</title>
+<style>
+  body { font-family: Arial, sans-serif; }
+  #game-container { display: grid; grid-template-columns: repeat(4, 80px); grid-gap: 10px; margin: 20px auto; width: max-content; }
+  .tile {
+    width: 80px; height: 80px; background: #cdc1b4; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #776e65;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+<h1>2048 Game</h1>
+<div id="game-container"></div>
+<button onclick="resetGame()">Reset Game</button>
+
+<script>
+let matrix = [];
+
+function renderMatrix() {
+  const container = document.getElementById('game-container');
+  container.innerHTML = '';
+  for(let i = 0; i < 4; i++) {
+    for(let j = 0; j < 4; j++) {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.textContent = matrix[i][j] === 0 ? '' : matrix[i][j];
+      container.appendChild(tile);
+    }
+  }
+}
+
+function fetchState() {
+  fetch('/state')
+    .then(response => response.json())
+    .then(data => {
+      matrix = data.matrix;
+      renderMatrix();
+    });
+}
+
+function sendMove(direction) {
+  fetch('/move', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({direction: direction})
+  })
+  .then(response => response.json())
+  .then(data => {
+    matrix = data.matrix;
+    renderMatrix();
+  });
+}
+
+function resetGame() {
+  fetch('/reset', { method: 'POST'})
+    .then(response => response.json())
+    .then(data => {
+      matrix = data.matrix;
+      renderMatrix();
+    });
+}
+
+document.addEventListener('keydown', event => {
+  switch(event.key) {
+    case 'ArrowUp':
+      sendMove('up');
+      break;
+    case 'ArrowDown':
+      sendMove('down');
+      break;
+    case 'ArrowLeft':
+      sendMove('left');
+      break;
+    case 'ArrowRight':
+      sendMove('right');
+      break;
+  }
+});
+
+// On load
+fetchState();
+</script>
+</body>
+</html>
