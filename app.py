@@ -1,3 +1,4 @@
+
 from flask import Flask, jsonify, request, render_template
 import random
 import os
@@ -45,7 +46,6 @@ def transpose(matrix):
     return [list(row) for row in zip(*matrix)]
 
 def move_right(matrix):
-    # Reverse rows, move left, then reverse back
     matrix = [row[::-1] for row in matrix]
     moved = move_left(matrix)
     matrix = [row[::-1] for row in matrix]
@@ -63,7 +63,6 @@ def move_down(matrix):
     matrix = transpose(matrix)
     return moved, matrix
 
-# Store game state globally (in production, use sessions or DB)
 game_matrix = create_matrix()
 
 @app.route('/')
@@ -100,5 +99,5 @@ def reset():
     return jsonify(matrix=game_matrix)
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 10000))  # Use Render's PORT or default 10000
+    port = int(os.environ.get("PORT", 10000))  
     app.run(host='0.0.0.0', port=port)
